@@ -24,7 +24,6 @@ const inputSensorData = async () => {
       ]
       await client.query('INSERT INTO data_sensor (id_lahan, suhu, kelembaban_udara, tekanan_udara, kecepatan_angin, kelembaban_tanah, intensitas_cahaya, cuaca, waktu) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)', payload)
     })
-    const dataSensor = await client.query('SELECT * FROM data_sensor;')
     console.log('Data updated at ' + new Date(Date.now()).toLocaleString())
     client.release()
   } catch (err) {
