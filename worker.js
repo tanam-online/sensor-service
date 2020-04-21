@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-var pool = require('./db/db_config')
+var pool = require('./db/config')
 
 /*
  * Create new random sensor inputs periodically.
@@ -8,21 +8,20 @@ var pool = require('./db/db_config')
 const inputSensorData = async () => {
   try {
     const client = await pool.connect()
-    const lahan = await client.query('SELECT id FROM lahan;')
-    const ids = (lahan) ? lahan.rows : null
-    const cuacaEnum = ['cerah', 'berawan', 'hujan']
+    const lahans = await client.query('SELECT id FROM lahan;')
+    const ids = (lahans) ? lahans.rows : null
+    const cuacaEnum = ['Cerah', 'Berawan', 'Hujan']
     ids.map(async id => {
       const payload = [
         id.id,
-        Math.floor(Math.random() * 50),
-        Math.floor(Math.random() * 50),
-        Math.floor(Math.random() * 50),
-        Math.floor(Math.random() * 50),
-        Math.floor(Math.random() * 50),
-        Math.floor(Math.random() * 50),
-        cuacaEnum[Math.floor(Math.random() * 2)]
+        Math.floor(Math.random() * 50),           // C
+        Math.floor(Math.random() * 100),          // %
+        Math.floor(Math.random() * 5000) + 5000,  // Cd/m2
+        Math.floor(Math.random() * 10),           // m/s
+        cuacaEnum[Math.floor(Math.random() * 3)]
       ]
-      await client.query('INSERT INTO data_sensor (id_lahan, suhu, kelembaban_udara, tekanan_udara, kecepatan_angin, kelembaban_tanah, intensitas_cahaya, cuaca, waktu) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)', payload)
+      await client.query(`INSERT INTO data_sensor (id_lahan, suhu, kelembaban, cahaya, angin, cuaca, waktu)
+                          VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)`, payload)
     })
     console.log('Data updated at ' + new Date(Date.now()).toLocaleString())
     client.release()
